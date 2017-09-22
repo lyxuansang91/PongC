@@ -52,6 +52,7 @@ public class Ball {
         position = new Vector2(colCircle.x, colCircle.y);
         velocity = new Vector2(0, 0);
         acceleration = new Vector2();
+        collided = false;
 
         Tween.registerAccessor(Value.class, new ValueAccessor());
         manager = new TweenManager();

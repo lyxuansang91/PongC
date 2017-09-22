@@ -6,6 +6,7 @@ import com.hungle.pongc.screens.GameScreen;
 import com.hungle.pongc.ui.SimpleButton;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class InputHandlerMenu implements InputProcessor {
 
@@ -62,15 +63,17 @@ public class InputHandlerMenu implements InputProcessor {
         screenY = scaleY(screenY);
 
         if (menuButtons.get(0).isTouchUp(screenX, screenY)) {
-            world.getMenuObject().getPad().end();
-            for (int i = 0; i < menuButtons.size(); i++) {
-                menuButtons.get(i).end();
+            Random random = new Random();
+            if (random.nextInt(2) % 2 == 0) {
+                world.getActionResolver().purchaseIAP();
+            }  else {
+                world.getMenuObject().getPad().end();
+                for (int i = 0; i < menuButtons.size(); i++) {
+                    menuButtons.get(i).end();
+                }
+                world.getMenuObject().getVolumeButton().end();
+                menuButtons.get(0).tranToGameScreen();
             }
-            world.getMenuObject().getVolumeButton().end();
-            world.getActionResolver().purchaseIAP();
-            // menuButtons.get(0).tranToGameScreen();
-            //world.getMenuObject().end();
-
         } else if (menuButtons.get(1).isTouchUp(screenX, screenY)) {
             world.getActionResolver().showScores();
 
