@@ -1,15 +1,45 @@
 package com.hungle.pongc;
 
+import com.anjlab.android.iab.v3.BillingProcessor;
+import com.anjlab.android.iab.v3.TransactionDetails;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
-import android.os.Bundle;
+import com.hungle.pongc.screens.GameScreen;
 
-public class PongC extends AndroidApplication implements ActionResolver{
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.util.Log;
+import android.widget.Toast;
+
+public class PongC extends AndroidApplication implements ActionResolver, BillingProcessor.IBillingHandler {
+
+	private static final String LICENSE_KEY = "";
+	private static final String TAG = PongC.class.getSimpleName();
+//	private static final String PRODUCT_ID = "game.king.pongc.price";
+	private static final String PRODUCT_ID = "android.test.purchased";
+	public CirclePongGame game;
+
+	private BillingProcessor bp;
+	private boolean readyToPurchase = false;
 	@Override
 	protected void onCreate (Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-		initialize(new CirclePongGame(this), config);
+		game = new CirclePongGame(this);
+		initialize(game, config);
+		if(!BillingProcessor.isIabServiceAvailable(this)) {
+			showToast("In-app billing service is unavailable, please upgrade Android Market/Play to version >= 3.9.16");
+		}
+
+		bp  = BillingProcessor.newBillingProcessor(this, LICENSE_KEY, this);
+		bp.initialize();
+	}
+
+	private void showToast(String message) {
+		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -79,8 +109,72 @@ public class PongC extends AndroidApplication implements ActionResolver{
 	}
 
 	@Override
+	protected void onDestroy() {
+		if(bp != null) {
+			bp.release();
+		}
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(!bp.handleActivityResult(requestCode, resultCode, data))
+			super.onActivityResult(requestCode, resultCode, data);
+	}
+
+	@Override
 	public void viewAd(boolean view) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public void purchaseIAP() {
+		if(!readyToPurchase) {
+			showToast("Billing not initialized!");
+			return;
+		}
+
+		if(bp != null) {
+			Log.d(TAG, "billing processor:" + bp);
+			bp.purchase(this, PRODUCT_ID);
+		}
+	}
+
+
+	@Override
+	public void onProductPurchased(@NonNull String productId, @Nullable TransactionDetails details) {
+		Log.d(TAG, "on product purchased:" + productId);
+		Log.d(TAG, "transaction detail:" + details.purchaseInfo.responseData);
+		boolean isConsumed = bp.consumePurchase(PRODUCT_ID);
+		if(isConsumed) {
+			// handle purchase success
+			Gdx.app.postRunnable(new Runnable() {
+				@Override
+				public void run() {
+					Log.d(TAG, "set screen game screen");
+					game.setScreen(new GameScreen(game, PongC.this));
+				}
+			});
+		}
+	}
+
+	@Override
+	public void onPurchaseHistoryRestored() {
+		for(String sku : bp.listOwnedProducts())
+			Log.d(TAG, "Owned Managed Product: " + sku);
+		for(String sku : bp.listOwnedSubscriptions())
+			Log.d(TAG, "Owned Subscription: " + sku);
+	}
+
+	@Override
+	public void onBillingError(int errorCode, @Nullable Throwable error) {
+		Log.d(TAG, "onBilling Error:" + errorCode);
+	}
+
+	@Override
+	public void onBillingInitialized() {
+		Log.d(TAG, "onBillingInitialized");
+		readyToPurchase = true;
 	}
 }

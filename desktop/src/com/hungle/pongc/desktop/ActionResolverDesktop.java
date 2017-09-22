@@ -65,4 +65,9 @@ public class ActionResolverDesktop implements ActionResolver {
     public void viewAd(boolean view){
 
     }
+
+    @Override
+    public void purchaseIAP() {
+        System.out.println("Desktop Application: purchase IAP");
+    }
 }

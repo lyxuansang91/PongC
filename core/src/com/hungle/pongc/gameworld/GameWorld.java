@@ -1,6 +1,7 @@
 package com.hungle.pongc.gameworld;
 
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Rectangle;
@@ -185,6 +186,7 @@ public class GameWorld {
     }
 
     private void finishGame() {
+        Gdx.app.log("finishGame", "finishGame");
         finish = true;
         centerCircle.end();
         pad.end();

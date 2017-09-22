@@ -25,4 +25,5 @@ public interface ActionResolver {
 
     void viewAd(boolean view);
 
+    void purchaseIAP();
 }

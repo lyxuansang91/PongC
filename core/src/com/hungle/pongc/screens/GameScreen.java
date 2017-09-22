@@ -19,6 +19,7 @@ public class GameScreen implements Screen {
     public float gameHeight = sH / (sW / gameWidth);
 
     public GameScreen(CirclePongGame cpgame, ActionResolver actionResolver) {
+
         Gdx.app.log("GameScreen", "Attached");
         Gdx.app.log("GameWidth " + gameWidth, "GameHeight " + gameHeight);
         world = new GameWorld(cpgame, actionResolver, gameWidth, gameHeight);

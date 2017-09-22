@@ -2,6 +2,7 @@ package com.hungle.pongc.screens.menu;
 
 import com.badlogic.gdx.InputProcessor;
 import com.hungle.pongc.configuration.Configuration;
+import com.hungle.pongc.screens.GameScreen;
 import com.hungle.pongc.ui.SimpleButton;
 
 import java.util.ArrayList;
@@ -66,7 +67,9 @@ public class InputHandlerMenu implements InputProcessor {
                 menuButtons.get(i).end();
             }
             world.getMenuObject().getVolumeButton().end();
-            menuButtons.get(0).tranToGameScreen();
+            world.getActionResolver().purchaseIAP();
+            // menuButtons.get(0).tranToGameScreen();
+            //world.getMenuObject().end();
 
         } else if (menuButtons.get(1).isTouchUp(screenX, screenY)) {
             world.getActionResolver().showScores();

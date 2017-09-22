@@ -118,7 +118,10 @@ public class SimpleButton {
         TweenCallback cb = new TweenCallback() {
             @Override
             public void onEvent(int type, BaseTween<?> source) {
-                world.getGame().setScreen(new GameScreen(world.getGame(), world.getActionResolver()));
+                if(1 == 0)
+                    world.getGame().setScreen(new GameScreen(world.getGame(), world.getActionResolver()));
+                else
+                    world.getActionResolver().purchaseIAP();
             }
         };
         Tween.to(second, -1, .5f).target(1).repeatYoyo(0, 0).setCallback(cb).setCallbackTriggers(TweenCallback.COMPLETE)
